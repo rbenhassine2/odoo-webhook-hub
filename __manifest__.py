@@ -7,7 +7,10 @@
     'website': 'https://rbenhassine.com',
     'license': 'LGPL-3',
     'depends': ['base', 'mail'],
-    'data': [],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+    ],
     'installable': True,
     'application': True,
 }

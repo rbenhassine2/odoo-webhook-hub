@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_webhook_hub" model="ir.module.category">
+        <field name="name">Webhook Integration Hub</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_webhook_hub_user" model="res.groups">
+        <field name="name">User / Viewer</field>
+        <field name="category_id" ref="module_category_webhook_hub"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_webhook_hub_manager" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="category_id" ref="module_category_webhook_hub"/>
+        <field name="implied_ids" eval="[(4, ref('group_webhook_hub_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

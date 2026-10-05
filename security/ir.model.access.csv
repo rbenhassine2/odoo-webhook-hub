@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_webhook_endpoint_user,webhook.endpoint.user,model_webhook_endpoint,group_webhook_hub_user,1,0,0,0
+access_webhook_endpoint_manager,webhook.endpoint.manager,model_webhook_endpoint,group_webhook_hub_manager,1,1,1,1
+access_webhook_event_user,webhook.event.user,model_webhook_event,group_webhook_hub_user,1,0,0,0
+access_webhook_event_manager,webhook.event.manager,model_webhook_event,group_webhook_hub_manager,1,1,1,1
