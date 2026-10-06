@@ -145,7 +145,7 @@ class WebhookReceiverController(http.Controller):
             computed_hmac = hmac.new(secret_bytes, raw_body, hashlib.sha256).hexdigest()
 
             # Constant-time comparison against timing attacks
-            if not computed_hmac != signature:
+            if not hmac.compare_digest(computed_hmac, signature):
                 return False, "Signature verification failed (HMAC mismatch)"
 
             return True, None
