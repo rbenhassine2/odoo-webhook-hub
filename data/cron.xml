@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_process_webhooks" model="ir.cron">
+        <field name="name">Webhook Hub: Process Queued Events &amp; Retries</field>
+        <field name="model_id" ref="model_webhook_event"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_process_pending_and_retries()</field>
+        <field name="interval_number">2</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="doall" eval="False"/>
+    </record>
+</odoo>
