@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_webhook_hub_root"
+              name="Webhook Hub"
+              sequence="85"
+              web_icon="base,static/description/settings.png"
+              groups="group_webhook_hub_user"/>
+
+    <!-- Events / Queue Category -->
+    <menuitem id="menu_webhook_events_category"
+              name="Activity &amp; Logs"
+              parent="menu_webhook_hub_root"
+              sequence="10"/>
+
+    <menuitem id="menu_webhook_events_all"
+              name="All Inbound Events"
+              parent="menu_webhook_events_category"
+              action="action_webhook_event"
+              sequence="10"/>
+
+    <menuitem id="menu_webhook_events_dead_letter"
+              name="Dead Letter Queue"
+              parent="menu_webhook_events_category"
+              action="action_webhook_event_dead_letter"
+              sequence="20"/>
+
+    <!-- Configuration Category -->
+    <menuitem id="menu_webhook_config_category"
+              name="Configuration"
+              parent="menu_webhook_hub_root"
+              sequence="20"
+              groups="group_webhook_hub_manager"/>
+
+    <menuitem id="menu_webhook_endpoints"
+              name="Endpoints"
+              parent="menu_webhook_config_category"
+              action="action_webhook_endpoint"
+              sequence="10"/>
+</odoo>

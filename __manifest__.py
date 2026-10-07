@@ -10,6 +10,9 @@
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
+        'views/webhook_endpoint_views.xml',
+        'views/webhook_event_views.xml',
+        'views/menus.xml',
     ],
     'installable': True,
     'application': True,

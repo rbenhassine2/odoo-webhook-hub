@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Webhook Event Tree View -->
+    <record id="view_webhook_event_tree" model="ir.ui.view">
+        <field name="name">webhook.event.tree</field>
+        <field name="model">webhook.event</field>
+        <field name="arch" type="xml">
+            <tree string="Webhook Events" decoration-success="state == 'done'"
+                  decoration-danger="state in ('failed', 'dead_letter')"
+                  decoration-warning="state == 'pending'"
+                  decoration-muted="state == 'ignored'">
+                <field name="create_date" string="Received At"/>
+                <field name="endpoint_id"/>
+                <field name="idempotency_key"/>
+                <field name="remote_ip"/>
+                <field name="retry_count"/>
+                <field name="execution_time_ms" string="Duration (ms)"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state in ('failed', 'dead_letter')"
+                       decoration-warning="state == 'pending'"
+                       decoration-muted="state == 'ignored'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Webhook Event Form View -->
+    <record id="view_webhook_event_form" model="ir.ui.view">
+        <field name="name">webhook.event.form</field>
+        <field name="model">webhook.event</field>
+        <field name="arch" type="xml">
+            <form string="Webhook Event">
+                <header>
+                    <button name="action_retry_now" string="Retry Now" type="object" class="btn-primary"
+                            attrs="{'invisible': [('state', 'not in', ('failed', 'dead_letter', 'pending'))]}"/>
+                    <button name="action_mark_done" string="Mark as Resolved" type="object" class="btn-secondary"
+                            attrs="{'invisible': [('state', 'in', ('done', 'ignored'))]}"/>
+                    <button name="action_mark_dead_letter" string="Move to Dead Letter" type="object" class="btn-warning"
+                            attrs="{'invisible': [('state', 'in', ('dead_letter', 'done', 'ignored'))]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,processing,done,failed,dead_letter"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Event Metadata">
+                            <field name="endpoint_id" readonly="1"/>
+                            <field name="idempotency_key" readonly="1"/>
+                            <field name="create_date" string="Received At" readonly="1"/>
+                            <field name="processed_date" readonly="1"/>
+                        </group>
+                        <group string="Network &amp; Execution">
+                            <field name="remote_ip" readonly="1"/>
+                            <field name="http_method" readonly="1"/>
+                            <field name="response_code" readonly="1"/>
+                            <field name="execution_time_ms" readonly="1"/>
+                            <field name="retry_count" readonly="1"/>
+                            <field name="next_retry_time" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Payload Body" name="payload">
+                            <field name="payload_raw" widget="text" readonly="1"
+                                   style="font-family: monospace; background: #f8f9fa;"/>
+                        </page>
+                        <page string="Request Headers" name="headers">
+                            <field name="headers_json" widget="text" readonly="1"
+                                   style="font-family: monospace;"/>
+                        </page>
+                        <page string="Error &amp; Traceback" name="error" attrs="{'invisible': [('error_message', '=', False)]}">
+                            <group>
+                                <field name="error_message" readonly="1"/>
+                            </group>
+                            <label for="error_traceback" string="Stack Trace"/>
+                            <field name="error_traceback" widget="text" readonly="1"
+                                   style="font-family: monospace; color: #dc3545;"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Webhook Event Search View -->
+    <record id="view_webhook_event_search" model="ir.ui.view">
+        <field name="name">webhook.event.search</field>
+        <field name="model">webhook.event</field>
+        <field name="arch" type="xml">
+            <search string="Search Webhook Events">
+                <field name="idempotency_key"/>
+                <field name="endpoint_id"/>
+                <field name="payload_raw" string="Payload Content"/>
+                <filter name="filter_failed" string="Failed" domain="[('state', '=', 'failed')]"/>
+                <filter name="filter_dead_letter" string="Dead Letter Queue" domain="[('state', '=', 'dead_letter')]"/>
+                <filter name="filter_pending" string="Pending / Queued" domain="[('state', '=', 'pending')]"/>
+                <filter name="filter_done" string="Successful" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_endpoint" string="Endpoint" context="{'group_by': 'endpoint_id'}"/>
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Webhook Event Action -->
+    <record id="action_webhook_event" model="ir.actions.act_window">
+        <field name="name">Webhook Audit Logs</field>
+        <field name="res_model">webhook.event</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_webhook_event_search"/>
+        <field name="context">{'search_default_group_by_endpoint': 1}</field>
+    </record>
+
+    <!-- Dead Letter Queue Action -->
+    <record id="action_webhook_event_dead_letter" model="ir.actions.act_window">
+        <field name="name">Dead Letter Queue</field>
+        <field name="res_model">webhook.event</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'dead_letter')]</field>
+    </record>
+</odoo>

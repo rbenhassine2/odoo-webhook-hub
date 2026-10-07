@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Webhook Endpoint Tree View -->
+    <record id="view_webhook_endpoint_tree" model="ir.ui.view">
+        <field name="name">webhook.endpoint.tree</field>
+        <field name="model">webhook.endpoint</field>
+        <field name="arch" type="xml">
+            <tree string="Webhook Endpoints">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="auth_type"/>
+                <field name="process_mode"/>
+                <field name="target_model_id"/>
+                <field name="event_count"/>
+                <field name="failed_count"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Webhook Endpoint Form View -->
+    <record id="view_webhook_endpoint_form" model="ir.ui.view">
+        <field name="name">webhook.endpoint.form</field>
+        <field name="model">webhook.endpoint</field>
+        <field name="arch" type="xml">
+            <form string="Webhook Endpoint">
+                <header>
+                    <button name="action_generate_secret" string="Rotate Secret Key" type="object" class="btn-secondary"
+                            confirm="Are you sure you want to rotate the secret key? External callers will need to be updated."/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_events" type="object" class="oe_stat_button" icon="fa-list-alt">
+                            <field name="event_count" widget="statinfo" string="Events"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name" placeholder="e.g. Salesforce Contact Sync"/></h1>
+                    </div>
+                    <group>
+                        <group string="Endpoint URL &amp; Routing">
+                            <field name="code" placeholder="salesforce-contacts"/>
+                            <field name="process_mode"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Handler Specification">
+                            <field name="target_model_id"/>
+                            <field name="handler_method" placeholder="process_webhook_event"/>
+                            <field name="max_retries"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Authentication &amp; Security" name="auth">
+                            <group>
+                                <field name="auth_type"/>
+                                <field name="secret_key" password="True" attrs="{'invisible': [('auth_type', '=', 'none')]}"/>
+                                <field name="signature_header" attrs="{'invisible': [('auth_type', '!=', 'hmac_sha256')]}"/>
+                            </group>
+                        </page>
+                        <page string="Idempotency Config" name="idempotency">
+                            <group>
+                                <field name="idempotency_header"/>
+                                <field name="idempotency_json_path"/>
+                            </group>
+                            <p class="text-muted">
+                                Configure where the controller will look for unique transaction IDs to guarantee deduplication and at-most-once processing.
+                            </p>
+                        </page>
+                        <page string="Description &amp; Notes" name="description">
+                            <field name="description" placeholder="Document external caller specifications, payload schema, or SFDC trigger details..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Webhook Endpoint Action -->
+    <record id="action_webhook_endpoint" model="ir.actions.act_window">
+        <field name="name">Endpoints</field>
+        <field name="res_model">webhook.endpoint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first inbound webhook endpoint!
+            </p>
+            <p>
+                Configure secure endpoints to receive events from Salesforce, Stripe, ChargeOver, and external APIs.
+            </p>
+        </field>
+    </record>
+</odoo>
